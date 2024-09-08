@@ -1,5 +1,5 @@
 function handleEditEvent(e) {
-    const sheetId = '1VYh53hcxQl6tUqVmLmGSety9hoyfeWMbPu1fwYbNAk8'; // Google Sheet ID
+    const sheetId = '1VYh53hcxQl6tUqVmLmGSety9hoyfeWMbPu1fwYbNAk8'; 
     const sheet = SpreadsheetApp.openById(sheetId);
     const dataSheet = sheet.getSheetByName('DATA');
     const contentSheet = sheet.getSheetByName('WA CONTENT');
@@ -9,27 +9,23 @@ function handleEditEvent(e) {
       return;
     }
   
-    // Check if e is defined
     if (!e || !e.range) {
       Logger.log('Event object or range is undefined');
       return;
     }
   
-    // Get the WA Content
     const queryMessageTemplate = contentSheet.getRange('B4').getValue();
     const buyMessageTemplate = contentSheet.getRange('B10').getValue();
     const apiUrlTemplate = contentSheet.getRange('B8').getValue();
     const waID = contentSheet.getRange('B6').getValue();
     const waPassword = contentSheet.getRange('B7').getValue();
   
-    // Log WA Content values for debugging
     Logger.log(`queryMessageTemplate: ${queryMessageTemplate}`);
     Logger.log(`buyMessageTemplate: ${buyMessageTemplate}`);
     Logger.log(`apiUrlTemplate: ${apiUrlTemplate}`);
     Logger.log(`waID: ${waID}`);
     Logger.log(`waPassword: ${waPassword}`);
   
-    // Get the edited row number
     const editedRow = e.range.getRow();
     const row = dataSheet.getRange(editedRow, 1, 1, dataSheet.getLastColumn()).getValues()[0];
     const phoneNumber = row[2];
@@ -39,7 +35,6 @@ function handleEditEvent(e) {
     const item = row[3];
     const amt = row[4];
   
-    // Log row values for debugging
     Logger.log(`phoneNumber: ${phoneNumber}`);
     Logger.log(`trigger: ${trigger}`);
     Logger.log(`triggerStatus: ${triggerStatus}`);
@@ -90,13 +85,12 @@ function handleEditEvent(e) {
   
     const today = new Date();
     const currentHour = today.getHours();
-    const currentDateStr = today.toISOString().split('T')[0]; // Format YYYY-MM-DD
+    const currentDateStr = today.toISOString().split('T')[0];
   
-    // Process all rows for birthday and anniversary messages
     const dataRange = dataSheet.getDataRange();
     const dataValues = dataRange.getValues();
   
-    for (let i = 1; i < dataValues.length; i++) { // Start from 1 to skip header row
+    for (let i = 1; i < dataValues.length; i++) { 
       const row = dataValues[i];
       const phoneNumber = row[2];
       const birthdayDate = row[9];
@@ -105,15 +99,12 @@ function handleEditEvent(e) {
       const anniversaryStatus = row[13];
       const name = row[14];
   
-      // Log row values for debugging
       Logger.log(`Row ${i + 1}: phoneNumber: ${phoneNumber}`);
       Logger.log(`Row ${i + 1}: birthdayDate: ${birthdayDate}`);
       Logger.log(`Row ${i + 1}: birthdayStatus: ${birthdayStatus}`);
       Logger.log(`Row ${i + 1}: anniversaryDate: ${anniversaryDate}`);
       Logger.log(`Row ${i + 1}: anniversaryStatus: ${anniversaryStatus}`);
       Logger.log(`Row ${i + 1}: name: ${name}`);
-  
-      // Second Message: Birthday Trigger
       if (birthdayDate && !birthdayStatus) {
         const birthday = new Date(birthdayDate);
         if (birthday.getMonth() === today.getMonth() && birthday.getDate() === today.getDate() && currentHour >= 8 && currentHour <= 9) {
@@ -124,7 +115,6 @@ function handleEditEvent(e) {
         }
       }
   
-      // Third Message: Anniversary Trigger
       if (anniversaryDate && !anniversaryStatus) {
         const anniversary = new Date(anniversaryDate);
         if (anniversary.getMonth() === today.getMonth() && anniversary.getDate() === today.getDate() && currentHour >= 8 && currentHour <= 9) {
@@ -147,7 +137,7 @@ function handleEditEvent(e) {
   }
   
   function resetAnnualStatuses() {
-    const sheetId = '1VYh53hcxQl6tUqVmLmGSety9hoyfeWMbPu1fwYbNAk8'; // Google Sheet ID
+    const sheetId = '1VYh53hcxQl6tUqVmLmGSety9hoyfeWMbPu1fwYbNAk8';
     const sheet = SpreadsheetApp.openById(sheetId);
     const dataSheet = sheet.getSheetByName('DATA');
   
@@ -159,49 +149,43 @@ function handleEditEvent(e) {
     const dataRange = dataSheet.getDataRange();
     const dataValues = dataRange.getValues();
   
-    for (let i = 1; i < dataValues.length; i++) { // Start from 1 to skip header row
-      dataSheet.getRange(i + 1, 13).setValue(''); // Reset birthdayStatus
-      dataSheet.getRange(i + 1, 14).setValue(''); // Reset anniversaryStatus
+    for (let i = 1; i < dataValues.length; i++) { 
+      dataSheet.getRange(i + 1, 13).setValue(''); 
+      dataSheet.getRange(i + 1, 14).setValue('');
     }
   }
   
-  // Set up a time-based trigger to reset statuses every year on January 1st
   function setUpAnnualResetTrigger() {
     ScriptApp.newTrigger('resetAnnualStatuses')
              .timeBased()
-             .onMonthDay(1)  // January 1st
-             .atHour(0)      // Midnight
+             .onMonthDay(1)  
+             .atHour(0)   
              .create();
   }
   
   function setUpTriggers() {
-    const sheetId = '1VYh53hcxQl6tUqVmLmGSety9hoyfeWMbPu1fwYbNAk8'; // Google Sheet ID
+    const sheetId = '1VYh53hcxQl6tUqVmLmGSety9hoyfeWMbPu1fwYbNAk8'; 
     const sheet = SpreadsheetApp.openById(sheetId);
   
-    // Remove all previous triggers to prevent duplicates
     const allTriggers = ScriptApp.getProjectTriggers();
     for (const trigger of allTriggers) {
       ScriptApp.deleteTrigger(trigger);
     }
   
-    // Set up an onEdit trigger
     ScriptApp.newTrigger('handleEditEvent')
              .forSpreadsheet(sheet)
              .onEdit()
              .create();
   
-    // Set up a time-based trigger to run every day at 8:00 AM
     ScriptApp.newTrigger('handleTimeBasedEvent')
              .timeBased()
              .everyDays(1)
              .atHour(8)
              .create();
   
-    // Set up an annual trigger to reset statuses on January 1st
     setUpAnnualResetTrigger();
   }
   
-  // For manual testing
   function testHandleEditEvent() {
     const testEvent = {
       range: SpreadsheetApp.getActiveSpreadsheet().getSheetByName('DATA').getRange('F2')
