@@ -36,8 +36,7 @@ function sendWhatsAppMessages() {
           .replace("{deliveryCharges}", deliveryCharges);
         
         // Construct the API URL with the specific parameters
-        var apiUrl = `https://irq.innojar.com/api/SendMsg?lLCNNo=21373&PIN=TJECHULVE&sPhNo=${customerNumber}&mob=${customerNumber}&sMsg=${encodeURIComponent(message)}&lTType=11`;
-        
+        var apiUrl = ''
         var options = {
           'method': 'post',
           'contentType': 'application/json',
