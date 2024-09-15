@@ -43,7 +43,7 @@ function handleEditEvent(e) {
     Logger.log(`amt: ${amt}`);
   
     const today = new Date();
-    const currentDateStr = today.toISOString().split('T')[0]; // Format YYYY-MM-DD
+    const currentDateStr = today.toISOString().split('T')[0]; // YYYY/MM/DD
   
     if (trigger && !triggerStatus) {
       let message = '';
@@ -69,7 +69,7 @@ function handleEditEvent(e) {
       return;
     }
   
-    // Get the WA Content
+    // Get WA Content
     const birthdayMessageTemplate = contentSheet.getRange('B12').getValue();
     const anniversaryMessageTemplate = contentSheet.getRange('B14').getValue();
     const apiUrlTemplate = contentSheet.getRange('B8').getValue();
@@ -95,8 +95,7 @@ function handleEditEvent(e) {
       const phoneNumber = row[2];
       const birthdayDate = row[9];
       const birthdayStatus = row[12];
-      const anniversaryDate = row[11];
-      const anniversaryStatus = row[13];
+      const anniversaryDate = row[11];      const anniversaryStatus = row[13];
       const name = row[14];
   
       Logger.log(`Row ${i + 1}: phoneNumber: ${phoneNumber}`);
